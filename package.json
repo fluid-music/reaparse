@@ -1,0 +1,19 @@
+{
+  "name": "reaparse",
+  "version": "0.0.1",
+  "description": "extract audio file annotations from a Reaper session",
+  "main": "cli.mjs",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Charles Holbrow",
+  "license": "ISC",
+  "dependencies": {
+    "rppp": "^0.1.6",
+    "yargs": "^17.2.1"
+  },
+  "bin":{
+    "reaparse": "./cli.mjs"
+  }
+}
