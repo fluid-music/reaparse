@@ -10,10 +10,10 @@
   "author": "Charles Holbrow",
   "license": "ISC",
   "dependencies": {
-    "rppp": "^0.1.6",
+    "rppp": "^0.2.9",
     "yargs": "^17.2.1"
   },
-  "bin":{
+  "bin": {
     "reaparse": "./cli.mjs"
   }
 }
