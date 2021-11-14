@@ -1,29 +1,5 @@
 import rppp from 'rppp'
 import { readFile} from 'fs/promises'
-import fs from 'fs'
-
-async function old() {
-  const rppString = fs.readFileSync('./beat-it.RPP', 'utf-8')
-  const rppObj = rppp.parse(rppString)
-  const tracks = rppObj.contents.filter(o => o.token === 'TRACK')
-  const t1Items = tracks[1].contents.filter(o => o.token === 'ITEM')
-  const posObjects = t1Items
-    .map(o => o.contents.filter(o => o.token === 'POSITION'))
-    .map(array => array[0])
-  const positions = posObjects.map(o => o.params[0])
-
-  console.log(positions)
-  console.log('found:', positions.length)
-
-  // I rendered a wave file that "beat-it.wav" that trims the silence from the
-  // beginning. The following timing adjustment calculates the start time of
-  // all measures within "beat-it.wav"
-  const startInSession = positions[0]
-  const beatTimesInWav = positions.map(position => position - startInSession)
-
-  const commonjs = 'module.exports = ' + JSON.stringify(beatTimesInWav, null, 2)
-  fs.writeFileSync('./beat-it-measures.js', commonjs)
-}
 
 export async function parseRppFileFromFilename(reaperFilename) {
   const reaperFileString = await readFile(reaperFilename, 'utf-8');
@@ -54,4 +30,78 @@ export function getFirstParamByToken(reaperObject, token) {
   const struct = getStructByToken(reaperObject, token);
   if (!struct || !struct.params.length) return null;
   return struct.params[0]
+}
+
+/**
+ * @typedef {Object} SimplifiedItem A convenient oversimplification of a Reaper
+ * ITEM, which is a non-destructive reference to a region within a timeline
+ * @property {string} itemName The item name, as set in Reaper
+ * @property {string} fileName The source file for the item
+ * @property {number} startInSourceSeconds trim this many seconds from the
+ * beginning of the source file
+ * @property {number} durationSeconds play this many seconds of the source
+ * material
+ * @property {number} positionSeconds where to place this item on the session
+ * timeline
+ */
+
+/**
+ * @typedef {Object} SimplifiedTrack A convenient oversimplification of a Reaper
+ * Track
+ * @property {SimplifiedItem[]} items
+ * @property {string} name
+ */
+
+/**
+ * @typedef {Object} SimplifiedProject A convenient oversimplification of a
+ * Reaper project
+ * @property {SimplifiedTrack[]} tracks
+ */
+
+/**
+ * @param {Object} rpppTrack
+ * @returns {SimplifiedItem[]}
+ */
+export function createSimplifiedTrack(rpppTrack) {
+  const simplifiedItems = [];
+  for (const item of getItemsInTrack(rpppTrack)) {
+    const itemName = getFirstParamByToken(item, 'NAME')
+    for (const source of getSourcesInItem(item)) {
+      const filename = getFirstParamByToken(source, 'FILE');
+      if (!filename) {
+        console.warn('reaparse is skipping an item with no direct FILE. (is it compound?)', item)
+      } else {
+        const durationSeconds = getFirstParamByToken(item, 'LENGTH');
+        const startInSourceSeconds = getFirstParamByToken(item, 'SOFFS');
+        const positionSeconds = getFirstParamByToken(item, 'POSITION');
+        if (
+          typeof durationSeconds !== 'number' ||
+          typeof startInSourceSeconds !== 'number' ||
+          typeof positionSeconds !== 'number'
+        ) {
+          console.warn(`reaparse is skipping an ITEM with missing timing tokens (${filename})...`, item)
+        } else {
+          simplifiedItems.push({
+            itemName,
+            filename,
+            durationSeconds,
+            startInSourceSeconds,
+            positionSeconds,
+          });
+        }
+      }
+    }
+  }
+  return {
+    name: getFirstParamByToken(rpppTrack, 'NAME'),
+    items: simplifiedItems,
+  };
+}
+
+export function createSimplifiedProject(rpppProject) {
+  const tracks = [];
+  for (const track of getTracksFromProject(rpppProject)) {
+    tracks.push(createSimplifiedTrack(track));
+  }
+  return { tracks }
 }
