@@ -35,8 +35,8 @@ export function getFirstParamByToken(reaperObject, token) {
 /**
  * @typedef {Object} SimplifiedItem A convenient oversimplification of a Reaper
  * ITEM, which is a non-destructive reference to a region within a timeline
- * @property {string} itemName The item name, as set in Reaper
- * @property {string} fileName The source file for the item
+ * @property {string} name The item name, as set in Reaper
+ * @property {string} filename The source file for the item
  * @property {number} startInSourceSeconds trim this many seconds from the
  * beginning of the source file
  * @property {number} durationSeconds play this many seconds of the source
@@ -56,11 +56,12 @@ export function getFirstParamByToken(reaperObject, token) {
  * @typedef {Object} SimplifiedProject A convenient oversimplification of a
  * Reaper project
  * @property {SimplifiedTrack[]} tracks
+ * @property {string} filename
  */
 
 /**
  * @param {Object} rpppTrack
- * @returns {SimplifiedItem[]}
+ * @returns {SimplifiedTrack}
  */
 export function createSimplifiedTrack(rpppTrack) {
   const simplifiedItems = [];
@@ -82,7 +83,7 @@ export function createSimplifiedTrack(rpppTrack) {
           console.warn(`reaparse is skipping an ITEM with missing timing tokens (${filename})...`, item)
         } else {
           simplifiedItems.push({
-            itemName,
+            name: itemName,
             filename,
             durationSeconds,
             startInSourceSeconds,
@@ -98,10 +99,24 @@ export function createSimplifiedTrack(rpppTrack) {
   };
 }
 
-export function createSimplifiedProject(rpppProject) {
+/**
+ * @param rpppProject 
+ * @returns {SimplifiedTrack[]}
+ */
+export function createSimplifiedTracks(rpppProject) {
   const tracks = [];
   for (const track of getTracksFromProject(rpppProject)) {
     tracks.push(createSimplifiedTrack(track));
   }
-  return { tracks }
+  return tracks
+}
+
+/**
+ * @param {string} rppFilename
+ * @returns {Promise<SimplifiedProject>}
+ */
+export async function parseRppFile(rppFilename) {
+  const rpppProject = await parseRppFileFromFilename(rppFilename);
+  const tracks = createSimplifiedTracks(rpppProject)
+  return { tracks, filename: rppFilename }
 }
