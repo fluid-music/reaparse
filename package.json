@@ -10,7 +10,9 @@
   "author": "Charles Holbrow",
   "license": "UNLICENSED",
   "dependencies": {
+    "mocha": "^9.2.0",
     "rppp": "^0.2.9",
+    "should": "^13.2.3",
     "yargs": "^17.2.1"
   },
   "bin": {
