@@ -4,8 +4,8 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import rppp from 'rppp';
-import * as parsers from '../src/parsers.mjs';
+import * as rppp from 'rppp';
+import * as parsers from '../../dist/parsers';
 
 import { FluidSession } from 'fluid-music';
 
