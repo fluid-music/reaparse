@@ -5,11 +5,12 @@
   "main": "src/parsers.mjs",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "Charles Holbrow",
   "license": "UNLICENSED",
   "dependencies": {
+    "fluid-music": "^0.9.6-beta.1",
     "mocha": "^9.2.0",
     "rppp": "^0.2.9",
     "should": "^13.2.3",

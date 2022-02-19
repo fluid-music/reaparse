@@ -1,5 +1,6 @@
 import rppp from 'rppp'
 import { readFile } from 'fs/promises'
+import { FluidAudioFile, FluidSession } from 'fluid-music';
 
 export async function parseRppFileFromFilename(reaperFilename) {
   const reaperFileString = await readFile(reaperFilename, 'utf-8');
@@ -100,6 +101,7 @@ export function createSimplifiedTrack(rpppTrack) {
   return {
     name: getFirstParamByToken(rpppTrack, 'NAME'),
     items: simplifiedItems,
+    isBus: getStructByToken(rpppTrack, 'ISBUS').params,
   };
 }
 
@@ -123,4 +125,36 @@ export async function parseRppFile(rppFilename) {
   const rpppProject = await parseRppFileFromFilename(rppFilename);
   const tracks = createSimplifiedTracks(rpppProject)
   return { tracks, filename: rppFilename }
+}
+
+/**
+ * @param {Object} rppProject
+ * @returns {import('fluid-music').FluidSession}
+ */
+export function createFluidSession(rppProject) {
+  const bpm = getFirstParamByToken(rppProject, 'TEMPO')
+  const simplifiedTracks = createSimplifiedTracks(rppProject)
+
+  // This is naive, because it doesn't account for track folders
+  const fluidTrackConfigs = simplifiedTracks.map(simpleTrack => {
+    return {
+      name: simpleTrack.name
+    }
+  })
+
+  const session = new FluidSession({bpm}, fluidTrackConfigs)
+
+  let globalTrackIndex = 0
+  session.forEachTrack(fluidTrack => {
+    const simplifiedTrack = simplifiedTracks[globalTrackIndex++]
+    simplifiedTrack.items.forEach(simplifiedItem => {
+      fluidTrack.audioFiles.push(new FluidAudioFile({
+        path: simplifiedItem.filename,
+        startInSourceSeconds: simplifiedItem.startInSourceSeconds,
+        durationSeconds: simplifiedItem.durationSeconds,
+        startTimeSeconds: simplifiedItem.positionSeconds,
+      }))
+    })
+  })
+  return session
 }
