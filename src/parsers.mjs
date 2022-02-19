@@ -69,40 +69,54 @@ export function getFirstParamByToken(reaperObject, token) {
  * @returns {SimplifiedTrack}
  */
 export function createSimplifiedTrack(rpppTrack) {
-  const simplifiedItems = [];
-  for (const item of getItemsInTrack(rpppTrack)) {
-    const itemName = getFirstParamByToken(item, 'NAME')
-    for (const source of getSourcesInItem(item)) {
-      const filename = getFirstParamByToken(source, 'FILE');
-      if (!filename) {
-        console.warn('reaparse is skipping an item with no direct FILE. (is it compound?)', item)
-      } else {
-        const durationSeconds = getFirstParamByToken(item, 'LENGTH');
-        const startInSourceSeconds = getFirstParamByToken(item, 'SOFFS');
-        const positionSeconds = getFirstParamByToken(item, 'POSITION');
-        if (
-          typeof durationSeconds !== 'number' ||
-          typeof startInSourceSeconds !== 'number' ||
-          typeof positionSeconds !== 'number'
-        ) {
-          console.warn(`reaparse is skipping an ITEM with missing timing tokens (${filename})...`, item)
-        } else {
-          simplifiedItems.push({
-            name: itemName,
-            filename,
-            durationSeconds,
-            startInSourceSeconds,
-            positionSeconds,
-          });
-        }
-      }
-    }
-  }
+  const simplifiedItems = getItemsInTrack(rpppTrack).map(createSimplifiedItem);
+
   return {
     name: getFirstParamByToken(rpppTrack, 'NAME'),
     items: simplifiedItems,
     isBus: getStructByToken(rpppTrack, 'ISBUS').params,
   };
+}
+
+export function createSimplifiedItem(rppItem) {
+  const simplifiedItems = []
+  const itemName = getFirstParamByToken(rppItem, 'NAME')
+  for (const source of getSourcesInItem(rppItem)) {
+    const filename = getFirstParamByToken(source, 'FILE');
+    if (!filename) {
+      console.warn('reaparse is skipping an item with no direct FILE. (is it compound?)', rppItem)
+    } else {
+      const durationSeconds = getFirstParamByToken(rppItem, 'LENGTH');
+      const startInSourceSeconds = getFirstParamByToken(rppItem, 'SOFFS');
+      const startTimeSeconds = getFirstParamByToken(rppItem, 'POSITION');
+      if (
+        typeof durationSeconds !== 'number' ||
+        typeof startInSourceSeconds !== 'number' ||
+        typeof startTimeSeconds !== 'number'
+      ) {
+        console.warn(`reaparse is skipping an ITEM with missing timing tokens (${filename})...`, rppItem)
+      } else {
+        simplifiedItems.push({
+          name: itemName,
+          path: filename,
+          durationSeconds,
+          startInSourceSeconds,
+          startTimeSeconds,
+        });
+      }
+    }
+  }
+
+  if (simplifiedItems.length === 0) {
+    console.error(rppItem);
+    throw new Error('reaparse found an item with no sources. This is not currently supported.');
+  }
+  if (simplifiedItems.length > 1) {
+    console.error(rppItem);
+    throw new Error(`reaparse does not currently support parsing items with multiple sources.`);
+  }
+
+  return simplifiedItems[0];
 }
 
 /**
@@ -149,10 +163,10 @@ export function createFluidSession(rppProject) {
     const simplifiedTrack = simplifiedTracks[globalTrackIndex++]
     simplifiedTrack.items.forEach(simplifiedItem => {
       fluidTrack.audioFiles.push(new FluidAudioFile({
-        path: simplifiedItem.filename,
+        path: simplifiedItem.path,
         startInSourceSeconds: simplifiedItem.startInSourceSeconds,
         durationSeconds: simplifiedItem.durationSeconds,
-        startTimeSeconds: simplifiedItem.positionSeconds,
+        startTimeSeconds: simplifiedItem.startTimeSeconds,
       }))
     })
   })
