@@ -2,7 +2,7 @@
   "name": "reaparse",
   "version": "0.0.1",
   "description": "extract audio file annotations from a Reaper session",
-  "main": "cli.mjs",
+  "main": "src/parsers.mjs",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
