@@ -10,10 +10,10 @@
   "author": "Charles Holbrow",
   "license": "UNLICENSED",
   "dependencies": {
+    "chai": "^4.3.6",
     "fluid-music": "^0.9.6-beta.1",
     "mocha": "^9.2.0",
     "rppp": "^0.2.9",
-    "should": "^13.2.3",
     "yargs": "^17.2.1"
   },
   "bin": {
