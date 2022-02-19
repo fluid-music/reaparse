@@ -1,8 +1,6 @@
 /* eslint-env mocha */
 import 'mocha';
-import { should, expect } from 'chai';
-
-// should();
+import { expect } from 'chai';
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
