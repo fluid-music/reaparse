@@ -6,6 +6,6 @@ The main Fluid Music library can already convert from `FluidSession` to a `.RPP`
 
 This is a lossy conversion!
 
-The Fluid Music session format is designed to describe only the 6 core components that are central DAWs and present in effectively all DAWs: tracks, clips (audio and midi), routing, automation, plugins, and sessions. As a result only these core components will be captured in the conversion process.
+The Fluid Music session format is designed to describe only the 6 core components that are central DAWs and present in effectively all DAWs: tracks, clips (audio and midi), routing, automation, plugins, and sessions. As a result only these core components will be captured in the conversion process. Read my [PhD Dissertation](https://web.media.mit.edu/~holbrow/project/fluid-music/Fluid-Music-Charles-Holbrow-PhD-Dissertation.pdf) for more details.
 
 This repo is experimental. I will use it to evaluate the feasibility of adding `.RPP` import into the main `fluid-music` package.
