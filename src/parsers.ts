@@ -1,4 +1,4 @@
-import rppp from 'rppp'
+import * as rppp from 'rppp'
 import { readFile } from 'fs/promises'
 import { FluidAudioFile, FluidSession } from 'fluid-music';
 
@@ -78,8 +78,16 @@ export function createSimplifiedTrack(rpppTrack) {
   };
 }
 
+type SimplifiedItem = {
+  name: string,
+  path: string,
+  durationSeconds: number,
+  startInSourceSeconds: number,
+  startTimeSeconds: number,
+}
+
 export function createSimplifiedItem(rppItem) {
-  const simplifiedItems = []
+  const simplifiedItems : SimplifiedItem[] = []
   const itemName = getFirstParamByToken(rppItem, 'NAME')
   for (const source of getSourcesInItem(rppItem)) {
     const filename = getFirstParamByToken(source, 'FILE');
@@ -124,7 +132,10 @@ export function createSimplifiedItem(rppItem) {
  * @returns {SimplifiedTrack[]}
  */
 export function createSimplifiedTracks(rpppProject) {
-  const tracks = [];
+  const tracks : {
+    name: string,
+    items: SimplifiedItem[]
+  }[] = [];
   for (const track of getTracksFromProject(rpppProject)) {
     tracks.push(createSimplifiedTrack(track));
   }

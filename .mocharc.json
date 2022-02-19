@@ -1,8 +1,4 @@
 {
-  "loader": "ts-node/esm",
-  "watch-extensions": [
-    "ts"
-  ],
   "recursive": true,
   "reporter": "spec",
   "timeout": 60000
