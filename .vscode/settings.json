@@ -1,0 +1,14 @@
+{
+  "cSpell.words": [
+    "ALLTAKES",
+    "CHANMODE",
+    "FADEIN",
+    "IGUID",
+    "PLAYRATE",
+    "SNAPOFFS",
+    "SOFFS",
+    "VOLPAN"
+  ],
+  "standard.workingDirectories": ["src", "test"],
+  "standard.autoFixOnSave": true
+}

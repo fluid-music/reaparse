@@ -1,8 +1,4 @@
 {
-  "compilerOptions": {
-    "types": ["@types/node"],
-    "allowJs": true
-  },
   "extends": "./tsconfig-base.json",
   "include": ["src/**/*.ts", "test/src/**/*.ts"]
 }
