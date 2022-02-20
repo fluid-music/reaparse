@@ -1,39 +1,39 @@
 import * as rppp from 'rppp'
 import { readFile } from 'fs/promises'
-import { FluidAudioFile, FluidSession } from 'fluid-music';
+import { FluidAudioFile, FluidSession } from 'fluid-music'
 
-export async function parseRppFileFromFilename(reaperFilename) {
-  const reaperFileString = await readFile(reaperFilename, 'utf-8');
-  const reaperProject = rppp.parse(reaperFileString);
-  return rppp.specialize(reaperProject);
+export async function parseRppFileFromFilename (reaperFilename) {
+  const reaperFileString = await readFile(reaperFilename, 'utf-8')
+  const reaperProject = rppp.parse(reaperFileString)
+  return rppp.specialize(reaperProject)
 }
 
-export function getTracksFromProject(reaperProject) {
-  return reaperProject.contents.filter(o => o.token === 'TRACK');
+export function getTracksFromProject (reaperProject) {
+  return reaperProject.contents.filter(o => o.token === 'TRACK')
 }
 
-export function getTrackName(reaperTrack) {
+export function getTrackName (reaperTrack) {
   return getFirstParamByToken(reaperTrack, 'NAME')
 }
 
-export function getItemsInTrack(reaperTrack) {
-  return reaperTrack.contents.filter(o => o.token === 'ITEM');
+export function getItemsInTrack (reaperTrack) {
+  return reaperTrack.contents.filter(o => o.token === 'ITEM')
 }
 
-export function getSourcesInItem(reaperItem) {
-  return reaperItem.contents.filter(i => i.token === 'SOURCE');
+export function getSourcesInItem (reaperItem) {
+  return reaperItem.contents.filter(i => i.token === 'SOURCE')
 }
 
-export function getStructByToken(reaperObject, token) {
+export function getStructByToken (reaperObject, token) {
   for (const struct of reaperObject.contents) {
-    if (struct.token === token) return struct;
+    if (struct.token === token) return struct
   }
-  return null;
+  return null
 }
 
-export function getFirstParamByToken(reaperObject, token) {
-  const struct = getStructByToken(reaperObject, token);
-  if (!struct || !struct.params.length) return null;
+export function getFirstParamByToken (reaperObject, token) {
+  const struct = getStructByToken(reaperObject, token)
+  if (!struct || !struct.params.length) return null
   return struct.params[0]
 }
 
@@ -68,35 +68,35 @@ export function getFirstParamByToken(reaperObject, token) {
  * @param {Object} rpppTrack
  * @returns {SimplifiedTrack}
  */
-export function createSimplifiedTrack(rpppTrack) {
-  const simplifiedItems = getItemsInTrack(rpppTrack).map(createSimplifiedItem);
+export function createSimplifiedTrack (rpppTrack) {
+  const simplifiedItems = getItemsInTrack(rpppTrack).map(createSimplifiedItem)
 
   return {
     name: getFirstParamByToken(rpppTrack, 'NAME'),
     items: simplifiedItems,
-    isBus: getStructByToken(rpppTrack, 'ISBUS').params,
-  };
+    isBus: getStructByToken(rpppTrack, 'ISBUS').params
+  }
 }
 
-type SimplifiedItem = {
-  name: string,
-  path: string,
-  durationSeconds: number,
-  startInSourceSeconds: number,
-  startTimeSeconds: number,
+interface SimplifiedItem {
+  name: string
+  path: string
+  durationSeconds: number
+  startInSourceSeconds: number
+  startTimeSeconds: number
 }
 
-export function createSimplifiedItem(rppItem) {
-  const simplifiedItems : SimplifiedItem[] = []
+export function createSimplifiedItem (rppItem) {
+  const simplifiedItems: SimplifiedItem[] = []
   const itemName = getFirstParamByToken(rppItem, 'NAME')
   for (const source of getSourcesInItem(rppItem)) {
-    const filename = getFirstParamByToken(source, 'FILE');
+    const filename = getFirstParamByToken(source, 'FILE')
     if (!filename) {
       console.warn('reaparse is skipping an item with no direct FILE. (is it compound?)', rppItem)
     } else {
-      const durationSeconds = getFirstParamByToken(rppItem, 'LENGTH');
-      const startInSourceSeconds = getFirstParamByToken(rppItem, 'SOFFS');
-      const startTimeSeconds = getFirstParamByToken(rppItem, 'POSITION');
+      const durationSeconds = getFirstParamByToken(rppItem, 'LENGTH')
+      const startInSourceSeconds = getFirstParamByToken(rppItem, 'SOFFS')
+      const startTimeSeconds = getFirstParamByToken(rppItem, 'POSITION')
       if (
         typeof durationSeconds !== 'number' ||
         typeof startInSourceSeconds !== 'number' ||
@@ -109,35 +109,35 @@ export function createSimplifiedItem(rppItem) {
           path: filename,
           durationSeconds,
           startInSourceSeconds,
-          startTimeSeconds,
-        });
+          startTimeSeconds
+        })
       }
     }
   }
 
   if (simplifiedItems.length === 0) {
-    console.error(rppItem);
-    throw new Error('reaparse found an item with no sources. This is not currently supported.');
+    console.error(rppItem)
+    throw new Error('reaparse found an item with no sources. This is not currently supported.')
   }
   if (simplifiedItems.length > 1) {
-    console.error(rppItem);
-    throw new Error(`reaparse does not currently support parsing items with multiple sources.`);
+    console.error(rppItem)
+    throw new Error('reaparse does not currently support parsing items with multiple sources.')
   }
 
-  return simplifiedItems[0];
+  return simplifiedItems[0]
 }
 
 /**
- * @param rpppProject 
+ * @param rpppProject
  * @returns {SimplifiedTrack[]}
  */
-export function createSimplifiedTracks(rpppProject) {
-  const tracks : {
-    name: string,
+export function createSimplifiedTracks (rpppProject) {
+  const tracks: Array<{
+    name: string
     items: SimplifiedItem[]
-  }[] = [];
+  }> = []
   for (const track of getTracksFromProject(rpppProject)) {
-    tracks.push(createSimplifiedTrack(track));
+    tracks.push(createSimplifiedTrack(track))
   }
   return tracks
 }
@@ -146,8 +146,8 @@ export function createSimplifiedTracks(rpppProject) {
  * @param {string} rppFilename
  * @returns {Promise<SimplifiedProject>}
  */
-export async function parseRppFile(rppFilename) {
-  const rpppProject = await parseRppFileFromFilename(rppFilename);
+export async function parseRppFile (rppFilename) {
+  const rpppProject = await parseRppFileFromFilename(rppFilename)
   const tracks = createSimplifiedTracks(rpppProject)
   return { tracks, filename: rppFilename }
 }
@@ -156,7 +156,7 @@ export async function parseRppFile(rppFilename) {
  * @param {Object} rppProject
  * @returns {import('fluid-music').FluidSession}
  */
-export function createFluidSession(rppProject) {
+export function createFluidSession (rppProject) {
   const bpm = getFirstParamByToken(rppProject, 'TEMPO')
   const simplifiedTracks = createSimplifiedTracks(rppProject)
 
@@ -167,7 +167,7 @@ export function createFluidSession(rppProject) {
     }
   })
 
-  const session = new FluidSession({bpm}, fluidTrackConfigs)
+  const session = new FluidSession({ bpm }, fluidTrackConfigs)
 
   let globalTrackIndex = 0
   session.forEachTrack(fluidTrack => {
@@ -177,7 +177,7 @@ export function createFluidSession(rppProject) {
         path: simplifiedItem.path,
         startInSourceSeconds: simplifiedItem.startInSourceSeconds,
         durationSeconds: simplifiedItem.durationSeconds,
-        startTimeSeconds: simplifiedItem.startTimeSeconds,
+        startTimeSeconds: simplifiedItem.startTimeSeconds
       }))
     })
   })

@@ -1,8 +1,8 @@
-import 'mocha';
-import { expect } from 'chai';
+import 'mocha'
+import { expect } from 'chai'
 
-import * as rppp from 'rppp';
-import { createSimplifiedItem } from '../../dist/parsers';
+import * as rppp from 'rppp'
+import { createSimplifiedItem } from '../../dist/parsers'
 
 const rppTrackItemString = `<ITEM
   POSITION 1.66666666666667
@@ -33,9 +33,9 @@ describe('createSimplifiedItem', function () {
 
   it('should correctly extract the startTime!', function () {
     expect(simpleItem.startTimeSeconds).to.be.approximately(1.66666666666667, 1e-10)
-  });
+  })
 
   it('should correctly extract the length', function () {
     expect(simpleItem.durationSeconds).to.be.approximately(0.21260770975057, 1e-10)
-  });
-});
+  })
+})
