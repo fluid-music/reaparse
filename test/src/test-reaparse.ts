@@ -5,7 +5,9 @@ import { expect } from 'chai'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import * as rppp from 'rppp'
-import * as parsers from '../../dist/parsers'
+
+import { createTracks } from '../../dist/track'
+import { createFluidSession } from '../../dist/fluid-helpers'
 
 import { FluidSession } from 'fluid-music'
 
@@ -14,18 +16,18 @@ const rppProject = rppp.parseAndSpecialize(rppFileAsString)
 
 describe('createSimplifiedTracks', function () {
   it('should have two tracks', function () {
-    const tracks = parsers.createSimplifiedTracks(rppProject)
+    const tracks = createTracks(rppProject)
     expect(tracks).to.have.lengthOf(2)
   })
 })
 
 describe('createFluidSession', function () {
-  const rppProject = rppp.parse(rppFileAsString)
-  const fluidSession = parsers.createFluidSession(rppProject)
+  const rppProject = rppp.parseAndSpecialize(rppFileAsString)
+  const fluidSession = createFluidSession(rppProject)
 
   it('should exist', function () {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(parsers.createFluidSession).to.exist
+    expect(createFluidSession).to.exist
   })
 
   it('should create a FluidSession instance', function () {
