@@ -10,7 +10,7 @@ import * as parsers from '../../dist/parsers'
 import { FluidSession } from 'fluid-music'
 
 const rppFileAsString = readFileSync(join('test', 'kit.RPP'), { encoding: 'utf-8' })
-const rppProject = rppp.parse(rppFileAsString)
+const rppProject = rppp.parseAndSpecialize(rppFileAsString)
 
 describe('createSimplifiedTracks', function () {
   it('should have two tracks', function () {
