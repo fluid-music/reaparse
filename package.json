@@ -17,7 +17,7 @@
     "yargs": "^17.2.1"
   },
   "bin": {
-    "reaparse": "./cli.mjs"
+    "reaparse": "dist/cli/main.js"
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",
