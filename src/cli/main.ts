@@ -1,7 +1,9 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import yargs from 'yargs'
 import { isAbsolute, join } from 'path'
 import { parseRppFile } from '../project'
+import { rppProjectToCsv } from '../csv'
 
 const argv = yargs(process.argv.slice(2))
   .option('json', {
@@ -10,9 +12,14 @@ const argv = yargs(process.argv.slice(2))
     describe: 'format output as raw JSON'
   })
   .option('common', {
-    alias: 'c',
+    alias: 'cjs',
     type: 'boolean',
     describe: 'format output as common js module'
+  })
+  .option('csv', {
+    alias: 'c',
+    type: 'boolean',
+    describe: 'List all project items in CSV format'
   })
   .usage('Usage: $0 session.RPP')
   .demandCommand(1)
@@ -27,10 +34,12 @@ const reaperFilename = isAbsolute(argument)
 async function run (): Promise<void> {
   const output = await parseRppFile(reaperFilename)
 
-  if (argv.common || argv.c) { // eslint-disable-line
+  if (argv.common || argv.cjs) {
     console.log(`module.exports = ${JSON.stringify(output, null, 2)}`)
-  } else if (argv.json || argv.j) { // eslint-disable-line
+  } else if (argv.json || argv.j) {
     console.log(JSON.stringify(output, null, 2))
+  } else if (argv.c || argv.csv) {
+    console.log(rppProjectToCsv(output.rppSource))
   } else {
     for (const track of output.tracks) {
       console.dir({

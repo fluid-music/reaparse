@@ -1,4 +1,7 @@
 /* eslint-env mocha */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+// disabling no-unused-expressions allows `expect(obj).to.exist`
+
 import 'mocha'
 import { expect } from 'chai'
 
@@ -26,7 +29,6 @@ describe('createFluidSession', function () {
   const fluidSession = createFluidSession(rppProject)
 
   it('should exist', function () {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(createFluidSession).to.exist
   })
 
@@ -63,14 +65,12 @@ describe('createFluidSession', function () {
     describe('modified track', function () {
       const modTrack = fluidSession.tracks[2]
       it('should exist', function () {
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         expect(modTrack).to.exist
       })
 
       describe('modified item on the track', function () {
         const item = modTrack.audioFiles[0]
         it('should exist', function () {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           expect(item).to.exist
         })
         it('should have pan of -0.5', function () {
