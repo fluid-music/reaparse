@@ -7,17 +7,17 @@ import { join } from 'node:path'
 import * as rppp from 'rppp'
 
 import { createTracks } from '../../dist/track'
-import { createFluidSession } from '../../dist/fluid-helpers'
+import { createFluidSession, gain2db, db2Gain } from '../../dist/fluid-helpers'
 
 import { FluidSession } from 'fluid-music'
 
 const rppFileAsString = readFileSync(join('test', 'kit.RPP'), { encoding: 'utf-8' })
-const rppProject = rppp.parseAndSpecialize(rppFileAsString)
+const kitRppProject = rppp.parseAndSpecialize(rppFileAsString)
 
 describe('createSimplifiedTracks', function () {
-  it('should have two tracks', function () {
-    const tracks = createTracks(rppProject)
-    expect(tracks).to.have.lengthOf(2)
+  it('should have three tracks', function () {
+    const tracks = createTracks(kitRppProject)
+    expect(tracks).to.have.lengthOf(3)
   })
 })
 
@@ -40,7 +40,6 @@ describe('createFluidSession', function () {
 
   describe('parse tracks', function () {
     it('should extract two tracks named "kick", and "snare" respectively', function () {
-      expect(fluidSession.tracks.length).to.equal(2)
       expect(fluidSession.tracks[0].name).to.equal('kick')
       expect(fluidSession.tracks[1].name).to.equal('snare')
     })
@@ -60,5 +59,50 @@ describe('createFluidSession', function () {
         expect(k2.startTimeSeconds).to.be.approximately(beatDurationInSeconds * 2.5, 0.00000001)
       })
     })
+
+    describe('modified track', function () {
+      const modTrack = fluidSession.tracks[2]
+      it('should exist', function () {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        expect(modTrack).to.exist
+      })
+
+      describe('modified item on the track', function () {
+        const item = modTrack.audioFiles[0]
+        it('should exist', function () {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          expect(item).to.exist
+        })
+        it('should have pan of -0.5', function () {
+          expect(item.pan).to.equal(-0.5)
+        })
+        it('should have gain of approximately -6', function () {
+          expect(item.gainDb).to.be.approximately(-6, 1e-5)
+        })
+      })
+    })
+  })
+})
+
+describe('decibel <-> gain conversion', function () {
+  describe('gain2db', function () {
+    it('should convert 0 to -Infinity', function () {
+      expect(gain2db(0)).to.equal(-Infinity)
+    })
+    it('should convert 0.5 to approximately -6.02', function () {
+      expect(gain2db(0.5)).to.be.approximately(-6.02, 1e-3)
+    })
+  })
+
+  it('should convert decibels to gain and back again', function () {
+    for (const value of [0, 1, -3, 3, -5, 5, -8 / 7, 8 / 7, 100, -100]) {
+      expect(gain2db(db2Gain(value))).to.be.approximately(value, 1e-10, `(${value.toPrecision(4)})`)
+    }
+  })
+
+  it('should convert gain to decibels and back again', function () {
+    for (const value of [0, 0.5, 2 / 3, 1, 2, 3, 4, 6, 12, 100]) {
+      expect(db2Gain(gain2db(value))).to.be.approximately(value, 1e-10, `(${value.toPrecision(4)})`)
+    }
   })
 })

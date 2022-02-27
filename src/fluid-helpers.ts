@@ -26,13 +26,23 @@ export function createFluidSession (rppProject): FluidSession {
   session.forEachTrack(fluidTrack => {
     const simplifiedTrack = simplifiedTracks[globalTrackIndex++]
     simplifiedTrack.items.forEach(simplifiedItem => {
-      fluidTrack.audioFiles.push(new FluidAudioFile({
-        path: simplifiedItem.path,
-        startInSourceSeconds: simplifiedItem.startInSourceSeconds,
-        durationSeconds: simplifiedItem.durationSeconds,
-        startTimeSeconds: simplifiedItem.startTimeSeconds
-      }))
+      fluidTrack.audioFiles.push(new FluidAudioFile(simplifiedItem))
     })
   })
   return session
+}
+
+/**
+ * Reaper appears to store gain in db to a numeric multiplier. Remember that
+ * this is equivalent to voltage gain, so we use 20 for the denominator in the
+ * equation. This means that 6.02 db of gain is approximately equal to a
+ * gain factor of 2. Remember Power=Voltage^2 which is how the 20 ends up in the
+ * db equation instead of 10.
+ */
+export function db2Gain (db: number): number {
+  return Math.pow(10, db / 20)
+}
+
+export function gain2db (gain: number): number {
+  return 20 * Math.log10(gain)
 }

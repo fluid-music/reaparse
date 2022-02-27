@@ -1,5 +1,6 @@
 import { getFirstParamByToken, getSourcesInItem } from './rppp-helpers'
 import { ReaperBase } from 'rppp'
+import { gain2db } from './fluid-helpers'
 
 /**
  * Intermediary format between the `rppp` version, and a FluidMusic AudioFile.
@@ -18,18 +19,22 @@ import { ReaperBase } from 'rppp'
  * the future when we add support for MIDI (or other SOURCE types).
  */
 export interface Item {
-  // The item name, as set in Reaper
+  /** The item name, as set in Reaper */
   name: string
-  // The source file for the item
+  /** The source file for the item */
   path: string
-  // trim this many seconds from the beginning of the source file
+  /** trim this many seconds from the beginning of the source file */
   startInSourceSeconds: number
-  // play this many seconds of the source material
+  /** play this many seconds of the source material */
   durationSeconds: number
-  // where to place this item on the session timeline
+  /** where to place this item on the session timeline */
   startTimeSeconds: number
-  // the rppp source object that this was created from
+  /** the rppp source object that this was created from */
   rppSource: ReaperBase
+  /** The track gain in dbfs */
+  gainDb: number
+  /** Pan, -1 is hard left, 1 is hard right, 0 is center */
+  pan: number
 }
 
 export function createItem (rppItem: ReaperBase): Item {
@@ -46,6 +51,8 @@ export function createItem (rppItem: ReaperBase): Item {
       const durationSeconds = getFirstParamByToken(rppItem, 'LENGTH')
       const startInSourceSeconds = getFirstParamByToken(rppItem, 'SOFFS')
       const startTimeSeconds = getFirstParamByToken(rppItem, 'POSITION')
+      const [trim, pan, gain] = rppItem.getStructByToken('VOLPAN')?.params as [number, number, number, number]
+      const gainDb = gain2db(trim * gain)
       if (
         typeof durationSeconds !== 'number' ||
         typeof startInSourceSeconds !== 'number' ||
@@ -59,7 +66,9 @@ export function createItem (rppItem: ReaperBase): Item {
           durationSeconds,
           startInSourceSeconds,
           startTimeSeconds,
-          rppSource: rppItem
+          rppSource: rppItem,
+          gainDb,
+          pan
         })
       }
     }
