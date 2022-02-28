@@ -7,6 +7,7 @@ import { ReaperBase } from 'rppp'
 interface CsvRow {
   name: string
   startTimeSeconds: number
+  startInSourceSeconds: number
   durationSeconds: number
 }
 
@@ -19,12 +20,13 @@ export function rppProjectToCsv (rppProject: ReaperBase): string {
       rows.push({
         name: item.name,
         startTimeSeconds: item.startTimeSeconds,
-        durationSeconds: item.durationSeconds
+        durationSeconds: item.durationSeconds,
+        startInSourceSeconds: item.startInSourceSeconds
       })
     }
   }
 
   rows.sort((a, b) => a.startTimeSeconds - b.startTimeSeconds)
 
-  return stringify(rows, { header: true, columns: ['name', 'startTimeSeconds', 'durationSeconds'] })
+  return stringify(rows, { header: true, columns: ['name', 'startTimeSeconds', 'startInSourceSeconds', 'durationSeconds'] })
 }

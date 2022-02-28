@@ -27,11 +27,11 @@ describe('rppProjectToCsv', async function () {
     const data = parse(csvString, { columns: true, groupColumnsByName: true, cast: true })
     expect(data).to.have.lengthOf(5)
     expect(data).to.deep.equal([
-      { name: 'kick', startTimeSeconds: 0, durationSeconds: 0.125 },
-      { name: 'snare', startTimeSeconds: 0.5, durationSeconds: 0.25 },
-      { name: 'snare', startTimeSeconds: 1, durationSeconds: 0.25 },
-      { name: 'kick', startTimeSeconds: 1.5, durationSeconds: 0.125 },
-      { name: 'kick', startTimeSeconds: 2, durationSeconds: 0.125 }
+      { name: 'kick', startTimeSeconds: 0, durationSeconds: 0.125, startInSourceSeconds: 0 },
+      { name: 'snare', startTimeSeconds: 0.5, durationSeconds: 0.25, startInSourceSeconds: 0 },
+      { name: 'snare', startTimeSeconds: 1, durationSeconds: 0.25, startInSourceSeconds: 0 },
+      { name: 'kick', startTimeSeconds: 1.5, durationSeconds: 0.125, startInSourceSeconds: 0 },
+      { name: 'kick', startTimeSeconds: 2, durationSeconds: 0.125, startInSourceSeconds: 0 }
     ])
   })
 })
