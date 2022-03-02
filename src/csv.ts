@@ -1,6 +1,6 @@
 
 import { stringify } from 'csv-stringify/sync'
-import { getItemsInTrack, getTracksFromProject } from './rppp-helpers'
+import { getItemsInTrack, getTrackName, getTracksFromProject } from './rppp-helpers'
 import { createItem } from './item'
 import { ReaperBase } from 'rppp'
 
@@ -10,12 +10,16 @@ interface CsvRow {
   startInSourceSeconds: number
   durationSeconds: number
   path: string
+  track: string
+  trackNumber: number
 }
 
 export function rppProjectToCsv (rppProject: ReaperBase): string {
   const rows: CsvRow[] = []
 
-  for (const track of getTracksFromProject(rppProject)) {
+  for (const [i, track] of getTracksFromProject(rppProject).entries()) {
+    const trackName = getTrackName(track)
+
     for (const rppItem of getItemsInTrack(track)) {
       const item = createItem(rppItem)
       rows.push({
@@ -23,12 +27,14 @@ export function rppProjectToCsv (rppProject: ReaperBase): string {
         startTimeSeconds: item.startTimeSeconds,
         durationSeconds: item.durationSeconds,
         startInSourceSeconds: item.startInSourceSeconds,
-        path: item.path
+        path: item.path,
+        track: trackName,
+        trackNumber: i
       })
     }
   }
 
   rows.sort((a, b) => a.startTimeSeconds - b.startTimeSeconds)
 
-  return stringify(rows, { header: true, columns: ['name', 'startTimeSeconds', 'startInSourceSeconds', 'durationSeconds', 'path'] })
+  return stringify(rows, { header: true, columns: ['name', 'startTimeSeconds', 'startInSourceSeconds', 'durationSeconds', 'path', 'track', 'trackNumber'] })
 }

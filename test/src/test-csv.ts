@@ -30,8 +30,8 @@ describe('rppProjectToCsv', async function () {
       data = parse(csvString, { columns: true, groupColumnsByName: true, cast: true })
     })
 
-    const kick = { name: 'kick', startInSourceSeconds: 0, path: 'media/kick.wav' }
-    const snare = { name: 'snare', startInSourceSeconds: 0, path: 'media/snare.wav' }
+    const kick = { name: 'kick', startInSourceSeconds: 0, path: 'media/kick.wav', track: '1-kick', trackNumber: 0 }
+    const snare = { name: 'snare', startInSourceSeconds: 0, path: 'media/snare.wav', track: '2-snare', trackNumber: 1 }
 
     it('should include five items', function () {
       expect(data).to.have.lengthOf(5)
