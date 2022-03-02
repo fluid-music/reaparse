@@ -10,7 +10,7 @@ interface CsvRow {
   startInSourceSeconds: number
   durationSeconds: number
   path: string
-  track: string
+  trackName: string
   trackNumber: number
 }
 
@@ -28,7 +28,7 @@ export function rppProjectToCsv (rppProject: ReaperBase): string {
         durationSeconds: item.durationSeconds,
         startInSourceSeconds: item.startInSourceSeconds,
         path: item.path,
-        track: trackName,
+        trackName: trackName,
         trackNumber: i
       })
     }
@@ -36,5 +36,5 @@ export function rppProjectToCsv (rppProject: ReaperBase): string {
 
   rows.sort((a, b) => a.startTimeSeconds - b.startTimeSeconds)
 
-  return stringify(rows, { header: true, columns: ['name', 'startTimeSeconds', 'startInSourceSeconds', 'durationSeconds', 'path', 'track', 'trackNumber'] })
+  return stringify(rows, { header: true, columns: ['name', 'startTimeSeconds', 'startInSourceSeconds', 'durationSeconds', 'path', 'trackName', 'trackNumber'] })
 }
