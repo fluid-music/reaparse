@@ -4,7 +4,7 @@ import { parseRppFileFromFilename } from './rppp-helpers'
 
 interface Project {
   tracks: Track[]
-  filename: string
+  path: string
   rppSource: ReaperBase
 }
 
@@ -17,7 +17,7 @@ export async function parseRppFile (rppFilename): Promise<Project> {
   const tracks = createTracks(rpppProject)
   return Object.create({}, {
     tracks: { value: tracks, enumerable: true },
-    filename: { value: rppFilename, enumerable: true },
+    path: { value: rppFilename, enumerable: true },
     rppSource: { value: rpppProject, enumerable: false }
   })
 }

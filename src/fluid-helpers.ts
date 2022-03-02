@@ -8,7 +8,6 @@ import { getFirstParamByToken } from './rppp-helpers'
  */
 export function createFluidSession (rppProject): FluidSession {
   const simplifiedTracks = createTracks(rppProject)
-  console.log(simplifiedTracks)
   // This is naive, because it doesn't account for track folders
   const fluidTrackConfigs = simplifiedTracks.map(simpleTrack => {
     return {
@@ -39,7 +38,7 @@ export function createFluidSession (rppProject): FluidSession {
  * gain factor of 2. Remember Power=Voltage^2 which is how the 20 ends up in the
  * db equation instead of 10.
  */
-export function db2Gain (db: number): number {
+export function db2gain (db: number): number {
   return Math.pow(10, db / 20)
 }
 

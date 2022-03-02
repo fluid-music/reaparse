@@ -10,7 +10,7 @@ import { join } from 'node:path'
 import * as rppp from 'rppp'
 
 import { createTracks } from '../../dist/track'
-import { createFluidSession, gain2db, db2Gain } from '../../dist/fluid-helpers'
+import { createFluidSession, gain2db, db2gain } from '../../dist/fluid-helpers'
 
 import { FluidSession } from 'fluid-music'
 
@@ -96,13 +96,13 @@ describe('decibel <-> gain conversion', function () {
 
   it('should convert decibels to gain and back again', function () {
     for (const value of [0, 1, -3, 3, -5, 5, -8 / 7, 8 / 7, 100, -100]) {
-      expect(gain2db(db2Gain(value))).to.be.approximately(value, 1e-10, `(${value.toPrecision(4)})`)
+      expect(gain2db(db2gain(value))).to.be.approximately(value, 1e-10, `(${value.toPrecision(4)})`)
     }
   })
 
   it('should convert gain to decibels and back again', function () {
     for (const value of [0, 0.5, 2 / 3, 1, 2, 3, 4, 6, 12, 100]) {
-      expect(db2Gain(gain2db(value))).to.be.approximately(value, 1e-10, `(${value.toPrecision(4)})`)
+      expect(db2gain(gain2db(value))).to.be.approximately(value, 1e-10, `(${value.toPrecision(4)})`)
     }
   })
 })
