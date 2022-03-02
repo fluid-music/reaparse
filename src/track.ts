@@ -16,11 +16,11 @@ export function createTrack (rppTrack: ReaperBase): Track {
     throw new Error(`Track is missing a NAME struct ${JSON.stringify(rppTrack)}`)
   }
 
-  return {
-    name,
-    items: simplifiedItems,
-    rppSource: rppTrack
-  }
+  return Object.create({}, {
+    name: { value: name, enumerable: true },
+    items: { value: simplifiedItems, enumerable: true },
+    rppSource: { value: rppTrack, enumerable: false }
+  })
 }
 
 export function createTracks (rpppProject: ReaperBase): Track[] {

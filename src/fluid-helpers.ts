@@ -8,7 +8,7 @@ import { getFirstParamByToken } from './rppp-helpers'
  */
 export function createFluidSession (rppProject): FluidSession {
   const simplifiedTracks = createTracks(rppProject)
-
+  console.log(simplifiedTracks)
   // This is naive, because it doesn't account for track folders
   const fluidTrackConfigs = simplifiedTracks.map(simpleTrack => {
     return {

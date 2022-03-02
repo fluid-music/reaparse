@@ -11,8 +11,7 @@ const argv = yargs(process.argv.slice(2))
     type: 'boolean',
     describe: 'format output as raw JSON'
   })
-  .option('common', {
-    alias: 'cjs',
+  .option('cjs', {
     type: 'boolean',
     describe: 'format output as common js module'
   })
@@ -35,18 +34,13 @@ async function run (): Promise<void> {
   const output = await parseRppFile(reaperFilename)
 
   if (argv.common || argv.cjs) {
-    console.log(`module.exports = ${JSON.stringify(output, null, 2)}`)
+    process.stdout.write(`module.exports = ${JSON.stringify(output, null, 2)}`)
   } else if (argv.json || argv.j) {
-    console.log(JSON.stringify(output, null, 2))
+    process.stdout.write(JSON.stringify(output, null, 2))
   } else if (argv.c || argv.csv) {
-    console.log(rppProjectToCsv(output.rppSource))
+    process.stdout.write(rppProjectToCsv(output.rppSource))
   } else {
-    for (const track of output.tracks) {
-      console.dir({
-        name: track.name,
-        items: track.items
-      }, { depth: 2 })
-    }
+    console.dir(output, { depth: null })
   }
 }
 

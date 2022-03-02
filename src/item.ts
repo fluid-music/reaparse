@@ -60,16 +60,16 @@ export function createItem (rppItem: ReaperBase): Item {
       ) {
         console.warn(`reaparse is skipping an ITEM with missing timing tokens (${filename})...`, rppItem)
       } else {
-        simplifiedItems.push({
-          name: itemName,
-          path: filename,
-          durationSeconds,
-          startInSourceSeconds,
-          startTimeSeconds,
-          rppSource: rppItem,
-          gainDb,
-          pan
-        })
+        simplifiedItems.push(Object.create({}, {
+          name: { value: itemName, enumerable: true },
+          path: { value: filename, enumerable: true },
+          durationSeconds: { value: durationSeconds, enumerable: true },
+          startInSourceSeconds: { value: startInSourceSeconds, enumerable: true },
+          startTimeSeconds: { value: startTimeSeconds, enumerable: true },
+          rppSource: { value: rppItem, enumerable: false },
+          gainDb: { value: gainDb, enumerable: true },
+          pan: { value: pan, enumerable: true }
+        }))
       }
     }
   }
