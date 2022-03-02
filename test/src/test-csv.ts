@@ -23,15 +23,33 @@ describe('rppProjectToCsv', async function () {
     expect(csvString).to.be.a.string
   })
 
-  it('should be in csv format', function () {
-    const data = parse(csvString, { columns: true, groupColumnsByName: true, cast: true })
-    expect(data).to.have.lengthOf(5)
-    expect(data).to.deep.equal([
-      { name: 'kick', startTimeSeconds: 0, durationSeconds: 0.125, startInSourceSeconds: 0 },
-      { name: 'snare', startTimeSeconds: 0.5, durationSeconds: 0.25, startInSourceSeconds: 0 },
-      { name: 'snare', startTimeSeconds: 1, durationSeconds: 0.25, startInSourceSeconds: 0 },
-      { name: 'kick', startTimeSeconds: 1.5, durationSeconds: 0.125, startInSourceSeconds: 0 },
-      { name: 'kick', startTimeSeconds: 2, durationSeconds: 0.125, startInSourceSeconds: 0 }
-    ])
+  describe('csv parsing', function () {
+    let data: any = null
+
+    before(function () {
+      data = parse(csvString, { columns: true, groupColumnsByName: true, cast: true })
+    })
+
+    const kick = { name: 'kick', startInSourceSeconds: 0, path: 'media/kick.wav' }
+    const snare = { name: 'snare', startInSourceSeconds: 0, path: 'media/snare.wav' }
+
+    it('should include five items', function () {
+      expect(data).to.have.lengthOf(5)
+    })
+    it('should find a kick at position 0', function () {
+      expect(data[0]).to.deep.equal({ startTimeSeconds: 0, durationSeconds: 0.125, ...kick })
+    })
+    it('should find a snare at position 1', function () {
+      expect(data[1]).to.deep.equal({ startTimeSeconds: 0.5, durationSeconds: 0.25, ...snare })
+    })
+    it('should find a snare at position 2', function () {
+      expect(data[2]).to.deep.equal({ startTimeSeconds: 1, durationSeconds: 0.25, ...snare })
+    })
+    it('should find a kick at position 3', function () {
+      expect(data[3]).to.deep.equal({ startTimeSeconds: 1.5, durationSeconds: 0.125, ...kick })
+    })
+    it('should find a kick at position 4', function () {
+      expect(data[4]).to.deep.equal({ startTimeSeconds: 2, durationSeconds: 0.125, ...kick })
+    })
   })
 })
