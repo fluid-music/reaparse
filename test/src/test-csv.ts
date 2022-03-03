@@ -11,13 +11,13 @@ import { expect } from 'chai'
 import { parseAndSpecialize } from 'rppp'
 import { parse } from 'csv-parse/sync'
 
-import { CsvRow, csvRowsToFluidSession, rppProjectToCsvString } from '../../dist/csv'
+import { Region, regionsToFluidSession, rppProjectToRegionsCsvString } from '../../dist/csv'
 
 const rppFileAsString = readFileSync(join('test', '60-bpm.RPP'), { encoding: 'utf-8' })
 const rppProject = parseAndSpecialize(rppFileAsString)
 
 describe('CSV', async function () {
-  const csvString = rppProjectToCsvString(rppProject)
+  const csvString = rppProjectToRegionsCsvString(rppProject)
   const kick = { name: 'kick', startInSourceSeconds: 0, path: 'media/kick.wav', trackName: '1-kick', trackNumber: 0, durationSeconds: 0.125 }
   const snare = { name: 'snare', startInSourceSeconds: 0, path: 'media/snare.wav', trackName: '2-snare', trackNumber: 1, durationSeconds: 0.25 }
 
@@ -52,15 +52,15 @@ describe('CSV', async function () {
     })
   })
 
-  describe('csvRowsToFluidSession', function () {
-    const csvRows: CsvRow[] = [
+  describe('regionsToFluidSession', function () {
+    const csvRows: Region[] = [
       { startTimeSeconds: 0, ...kick },
       { startTimeSeconds: 0.5, ...kick },
       { startTimeSeconds: 1.0, ...kick },
       { startTimeSeconds: 1.5, ...snare }
     ]
 
-    const fluidSession = csvRowsToFluidSession(csvRows)
+    const fluidSession = regionsToFluidSession(csvRows)
     it('should parse the tracks', function () {
       expect(fluidSession.tracks).to.have.lengthOf(2, 'incorrect number of tracks')
     })

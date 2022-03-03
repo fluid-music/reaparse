@@ -8,11 +8,7 @@ interface Project {
   rppSource: ReaperBase
 }
 
-/**
- * @param {string} rppFilename
- * @returns {Promise<SimplifiedProject>}
- */
-export async function parseRppFile (rppFilename): Promise<Project> {
+export async function rppFileNameToSimpleJsObject (rppFilename): Promise<Project> {
   const rpppProject = await parseRppFileFromFilename(rppFilename)
   const tracks = createTracks(rpppProject)
   return Object.create({}, {

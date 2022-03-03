@@ -6,7 +6,17 @@ import { createItem } from './item'
 import { ReaperBase } from 'rppp'
 import { FluidAudioFile, FluidSession, FluidTrack, sessionToReaperProject } from 'fluid-music'
 
-export interface CsvRow {
+/**
+ * A Region is a reference to a section of an audio file or audio resource.
+ * Unlike a Reaper ITEM or FluidAudioFile, it is not designed to be contained
+ * within a track. Instead it references a hypothetical track (and track number)
+ * that it is contained within. This allows us to reconstruct a Fluid Music
+ * session from only a list of regions.
+ *
+ * A Region is a a good way to store session information in a comparatively flat
+ * structure.
+ */
+export interface Region {
   name: string
   startTimeSeconds: number
   startInSourceSeconds: number
@@ -15,8 +25,9 @@ export interface CsvRow {
   trackName: string
   trackNumber: number
 }
-export function rppProjectToCsvRows (rppProject: ReaperBase): CsvRow[] {
-  const rows: CsvRow[] = []
+
+export function rppProjectToRegions (rppProject: ReaperBase): Region[] {
+  const rows: Region[] = []
 
   for (const [i, track] of getTracksFromProject(rppProject).entries()) {
     const trackName = getTrackName(track)
@@ -40,13 +51,13 @@ export function rppProjectToCsvRows (rppProject: ReaperBase): CsvRow[] {
   return rows
 }
 
-export function rppProjectToCsvString (rppProject: ReaperBase): string {
-  const rows = rppProjectToCsvRows(rppProject)
+export function rppProjectToRegionsCsvString (rppProject: ReaperBase): string {
+  const rows = rppProjectToRegions(rppProject)
   return stringify(rows, { header: true, columns: ['name', 'startTimeSeconds', 'startInSourceSeconds', 'durationSeconds', 'path', 'trackName', 'trackNumber'] })
 }
 
-export function csvRowsToFluidSession (rows: CsvRow[]): FluidSession {
-  const tracksMap: Map<number, { name: string, rows: CsvRow[] }> = new Map()
+export function regionsToFluidSession (rows: Region[]): FluidSession {
+  const tracksMap: Map<number, { name: string, rows: Region[] }> = new Map()
   let highestTrackNumber = -1
 
   for (const row of rows) {
@@ -81,13 +92,13 @@ export function csvRowsToFluidSession (rows: CsvRow[]): FluidSession {
   return session
 }
 
-export function csvStringToFluidSession (csvString: string): FluidSession {
+export function regionsCsvStringToFluidSession (csvString: string): FluidSession {
   const data = parse(csvString, { columns: true, groupColumnsByName: true, cast: true })
-  return csvRowsToFluidSession(data)
+  return regionsToFluidSession(data)
 }
 
-export async function csvStringToRppString (csvString: string): Promise<string> {
-  const fluidSession = csvStringToFluidSession(csvString)
+export async function regionsCsvStringToRppString (csvString: string): Promise<string> {
+  const fluidSession = regionsCsvStringToFluidSession(csvString)
   const rppProject = await sessionToReaperProject(fluidSession)
   return rppProject.dump()
 }

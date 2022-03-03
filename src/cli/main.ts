@@ -3,8 +3,8 @@
 import yargs from 'yargs'
 import { isAbsolute, join, extname } from 'node:path'
 import { readFile } from 'node:fs/promises'
-import { parseRppFile } from '../project'
-import { csvStringToRppString, rppProjectToCsvString } from '../csv'
+import { rppFileNameToSimpleJsObject } from '../project'
+import { regionsCsvStringToRppString, rppProjectToRegionsCsvString } from '../csv'
 
 const argv = yargs(process.argv.slice(2))
   .option('json', {
@@ -35,20 +35,20 @@ async function run (): Promise<void> {
   const fileExtension = extname(inputFilename).toLowerCase()
 
   if (fileExtension === '.rpp') {
-    const output = await parseRppFile(inputFilename)
+    const output = await rppFileNameToSimpleJsObject(inputFilename)
 
     if (argv.common || argv.cjs) {
       process.stdout.write(`module.exports = ${JSON.stringify(output, null, 2)}`)
     } else if (argv.json || argv.j) {
       process.stdout.write(JSON.stringify(output, null, 2))
     } else if (argv.c || argv.csv) {
-      process.stdout.write(rppProjectToCsvString(output.rppSource))
+      process.stdout.write(rppProjectToRegionsCsvString(output.rppSource))
     } else {
       console.dir(output, { depth: null })
     }
   } else if (fileExtension === '.csv') {
     const csvString = await readFile(inputFilename, { encoding: 'utf-8' })
-    const rppString = await csvStringToRppString(csvString)
+    const rppString = await regionsCsvStringToRppString(csvString)
     process.stdout.write(rppString)
   } else {
     throw new Error(`unrecognized input file extension: ${fileExtension}`)
