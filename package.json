@@ -1,6 +1,6 @@
 {
   "name": "@fluid-music/reaparse",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "extract audio file annotations from a Reaper session",
   "main": "dist/index.js",
   "scripts": {
