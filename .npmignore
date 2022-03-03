@@ -1,8 +1,8 @@
 src/
 .vscode/
 test/
-**.map
-**.tsbuildinfo
+**/*.map
+**/*.tsbuildinfo
 .mocharc.json
 tsconfig-base.json
 tsconfig.eslint.json

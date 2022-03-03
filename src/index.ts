@@ -3,6 +3,7 @@ export {
   regionsToFluidSession,
   regionsCsvStringToFluidSession,
   rppProjectToRegions,
+  rppStringToRegions,
   rppProjectToRegionsCsvString,
   regionsCsvStringToRppString
 } from './csv'

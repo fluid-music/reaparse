@@ -3,7 +3,7 @@ import { stringify } from 'csv-stringify/sync'
 import { parse } from 'csv-parse/sync'
 import { getItemsInTrack, getTrackName, getTracksFromProject } from './rppp-helpers'
 import { createItem } from './item'
-import { ReaperBase } from 'rppp'
+import { ReaperBase, parseAndSpecialize } from 'rppp'
 import { FluidAudioFile, FluidSession, FluidTrack, sessionToReaperProject } from 'fluid-music'
 
 /**
@@ -24,6 +24,11 @@ export interface Region {
   path: string
   trackName: string
   trackNumber: number
+}
+
+export function rppStringToRegions (rppString: string): Region[] {
+  const rppProject = parseAndSpecialize(rppString)
+  return rppProjectToRegions(rppProject)
 }
 
 export function rppProjectToRegions (rppProject: ReaperBase): Region[] {
