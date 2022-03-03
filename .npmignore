@@ -1,0 +1,8 @@
+src/
+.vscode/
+test/
+**.map
+**.tsbuildinfo
+.mocharc.json
+tsconfig-base.json
+tsconfig.eslint.json

@@ -1,12 +1,13 @@
 import { FluidAudioFile, FluidSession } from 'fluid-music'
 import { createTracks } from './track'
 import { getFirstParamByToken } from './rppp-helpers'
+import { ReaperBase } from 'rppp'
 
 /**
  * @param {Object} rppProject
  * @returns {import('fluid-music').FluidSession}
  */
-export function createFluidSession (rppProject): FluidSession {
+export function rppProjectToFluidSession (rppProject: ReaperBase): FluidSession {
   const simplifiedTracks = createTracks(rppProject)
   // This is naive, because it doesn't account for track folders
   const fluidTrackConfigs = simplifiedTracks.map(simpleTrack => {

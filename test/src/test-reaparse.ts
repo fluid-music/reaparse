@@ -10,7 +10,7 @@ import { join } from 'node:path'
 import * as rppp from 'rppp'
 
 import { createTracks } from '../../dist/track'
-import { createFluidSession, gain2db, db2gain } from '../../dist/fluid-helpers'
+import { rppProjectToFluidSession, gain2db, db2gain } from '../../dist/fluid-helpers'
 
 import { FluidSession } from 'fluid-music'
 
@@ -26,10 +26,10 @@ describe('createSimplifiedTracks', function () {
 
 describe('createFluidSession', function () {
   const rppProject = rppp.parseAndSpecialize(rppFileAsString)
-  const fluidSession = createFluidSession(rppProject)
+  const fluidSession = rppProjectToFluidSession(rppProject)
 
   it('should exist', function () {
-    expect(createFluidSession).to.exist
+    expect(rppProjectToFluidSession).to.exist
   })
 
   it('should create a FluidSession instance', function () {

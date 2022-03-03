@@ -4,7 +4,7 @@ import { parse } from 'csv-parse/sync'
 import { getItemsInTrack, getTrackName, getTracksFromProject } from './rppp-helpers'
 import { createItem } from './item'
 import { ReaperBase } from 'rppp'
-import { FluidAudioFile, FluidSession, FluidTrack } from 'fluid-music'
+import { FluidAudioFile, FluidSession, FluidTrack, sessionToReaperProject } from 'fluid-music'
 
 export interface CsvRow {
   name: string
@@ -84,4 +84,10 @@ export function csvRowsToFluidSession (rows: CsvRow[]): FluidSession {
 export function csvStringToFluidSession (csvString: string): FluidSession {
   const data = parse(csvString, { columns: true, groupColumnsByName: true, cast: true })
   return csvRowsToFluidSession(data)
+}
+
+export async function csvStringToRppString (csvString: string): Promise<string> {
+  const fluidSession = csvStringToFluidSession(csvString)
+  const rppProject = await sessionToReaperProject(fluidSession)
+  return rppProject.dump()
 }

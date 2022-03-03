@@ -4,7 +4,7 @@ import yargs from 'yargs'
 import { isAbsolute, join, extname } from 'node:path'
 import { readFile } from 'node:fs/promises'
 import { parseRppFile } from '../project'
-import { csvStringToFluidSession, rppProjectToCsvString } from '../csv'
+import { csvStringToRppString, rppProjectToCsvString } from '../csv'
 
 const argv = yargs(process.argv.slice(2))
   .option('json', {
@@ -48,9 +48,8 @@ async function run (): Promise<void> {
     }
   } else if (fileExtension === '.csv') {
     const csvString = await readFile(inputFilename, { encoding: 'utf-8' })
-    const fluidSession = csvStringToFluidSession(csvString)
-    const rppFilename = inputFilename + '.RPP'
-    await fluidSession.saveAsReaperFile(rppFilename)
+    const rppString = await csvStringToRppString(csvString)
+    process.stdout.write(rppString)
   } else {
     throw new Error(`unrecognized input file extension: ${fileExtension}`)
   }
