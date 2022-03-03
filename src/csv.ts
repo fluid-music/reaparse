@@ -107,3 +107,9 @@ export async function regionsCsvStringToRppString (csvString: string): Promise<s
   const rppProject = await sessionToReaperProject(fluidSession)
   return rppProject.dump()
 }
+
+export async function regionsToRppString (regions: Region[]): Promise<string> {
+  const fluidSession = regionsToFluidSession(regions)
+  const rppProject = await sessionToReaperProject(fluidSession)
+  return rppProject.dump()
+}

@@ -5,7 +5,8 @@ export {
   rppProjectToRegions,
   rppStringToRegions,
   rppProjectToRegionsCsvString,
-  regionsCsvStringToRppString
+  regionsCsvStringToRppString,
+  regionsToRppString
 } from './csv'
 
 export {
