@@ -4,8 +4,10 @@
   "description": "extract audio file annotations from a Reaper session",
   "main": "dist/index.js",
   "scripts": {
+    "build": "tsc --build test",
     "watch-ts": "tsc --build test --watch",
-    "watch-tests": "mocha --watch  test/compiled"
+    "watch-tests": "mocha --watch  test/compiled",
+    "prepublishOnly": "npm run build && mocha test/compiled"
   },
   "author": "Charles Holbrow",
   "license": "UNLICENSED",
